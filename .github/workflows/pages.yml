@@ -24,12 +24,17 @@ jobs:
           node-version: '20'
       - run: npm ci
       - run: npm run lint:dc
-      - run: npx vitest run
       - uses: actions/configure-pages@v5
         id: pages
       - run: npm run publish:loader
         env:
           VITE_LOADER_BASE_URL: ${{ steps.pages.outputs.base_url }}/
+      # Runs after the build (not before) so scripts/verifyLoaderBuild.test.js's
+      # real assertion — checking the built bundle for the configured base URL
+      # rather than a hardcoded logo path — actually fires here instead of
+      # always skipping (see docs/superpowers/plans/2026-09-22-bookmarklet-loader.md's
+      # final-review notes on this ordering).
+      - run: npx vitest run
       - uses: actions/upload-pages-artifact@v3
         with:
           path: publish
