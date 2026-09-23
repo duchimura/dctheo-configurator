@@ -69,7 +69,7 @@ const Navigation = () => {
 					className="tw-flex tw-items-center tw-p-0"
 				>
 					<img
-						src="/images/logo.png"
+						src={`${import.meta.env.BASE_URL}images/logo.png`}
 						className="title-logo"
 						alt="GP2040-CE logo"
 					/>
