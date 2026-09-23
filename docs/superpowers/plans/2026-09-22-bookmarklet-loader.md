@@ -7,7 +7,7 @@ reflashing, no install, and no code signing — by dragging a bookmarklet that, 
 the controller's own `http://192.168.7.1` config page, replaces the tab's content with the UI
 loaded from a hosted, published build.
 
-**Architecture:** A second Vite build of the existing `` app (`vite.loader.config.ts`),
+**Architecture:** A second Vite build of the existing app (`vite.loader.config.ts`),
 distinct from the firmware-embedded build, producing fixed-name (unhashed) output files under
 `publish/`. A small generator script renders a static landing page containing the
 bookmarklet (a `javascript:` URI that does DOM takeover + `<script>`/`<link>` tag injection —
@@ -36,14 +36,15 @@ existing style), GitHub Actions + `actions/deploy-pages`.
 - No firmware (C++) changes. No modification to the existing `npm run build` /
   `lib/httpd/fsdata.c` firmware-embedded build pipeline — this is an additional, separate build
   target.
-- **The loader build must not depend on `../proto` or `../configs`** (the firmware source tree)
-  at build time. Unlike the firmware-embedded `build` script, `build:loader` does **not** call
-  `build-proto`/`gen-board-wirings` — it uses whatever `src_gen/enums.ts` and
-  `src_gen/boardWirings.ts` are already committed (they're tracked in git, not generated
-  fresh in every build — confirmed via `git ls-files src_gen/`). This means the loader (and
-  the rest of ``) keeps building even if `src/`, `lib/`, `configs/`, `proto/`, and the CMake
-  files were deleted later — the explicit reason for this plan, per the user's request to keep
-  this code independent of the firmware in case the firmware side is dropped entirely.
+- **The loader build must not depend on `proto/` or `configs/`** (the firmware source tree). This
+  repo has neither directory at all — it was extracted from the original GP2040-CE-D_C_Theo fork
+  specifically so it doesn't (see `CLAUDE.md`'s "Generated code" section). Unlike the
+  firmware-embedded `build` script, `build:loader` does **not** call
+  `build-proto`/`gen-board-wirings` — it builds straight from whatever `src_gen/enums.ts` and
+  `src_gen/boardWirings.ts` are already committed (they're tracked in git, not generated fresh
+  every build — confirmed via `git ls-files src_gen/`). (This repo's own `src/` — the web app,
+  e.g. `src/Components/Navigation.jsx` in Task 1 below — is unrelated to the firmware's `src/`
+  and is of course still present.)
 - Mobile browsers are out of scope (controller config needs a wired USB connection to a
   PC/Mac regardless of bookmarklet support).
 - Bookmarklet always loads the latest published build from `main` — no version pinning (deferred
