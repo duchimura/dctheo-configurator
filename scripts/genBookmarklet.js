@@ -16,6 +16,9 @@ export function buildBookmarkletSource(baseUrl, jsFile, cssFile) {
 	const fullJsUrl = baseUrl + jsFile;
 	return (
 		`(function(){` +
+		// Bail out unless we're actually on the controller's own page — a
+		// misclick on some other tab shouldn't run this against that origin.
+		`if(location.hostname!=='192.168.7.1'&&!confirm('Load the D_C_Theo UI into this page?'))return;` +
 		`document.documentElement.innerHTML='<head></head><body><div id="root"></div></body>';` +
 		`var c=document.createElement('link');` +
 		`c.rel='stylesheet';c.href=${JSON.stringify(fullCssUrl)};document.head.appendChild(c);` +
@@ -38,11 +41,13 @@ export function escapeHtml(str) {
 }
 
 export function renderLandingPage(template, baseUrl, jsFile, cssFile) {
-	const source = buildBookmarkletSource(baseUrl, jsFile, cssFile);
 	const href = buildBookmarkletHref(baseUrl, jsFile, cssFile);
 	return template
 		.replaceAll('__BOOKMARKLET_HREF__', href)
-		.replaceAll('__BOOKMARKLET_CODE__', escapeHtml(source))
+		// The manual-fallback code box must contain the full `javascript:` URI
+		// (not just the bare function source) since that's what users are told
+		// to paste directly into a bookmark's URL field.
+		.replaceAll('__BOOKMARKLET_CODE__', escapeHtml(href))
 		.replaceAll('__BASE_URL__', baseUrl);
 }
 
@@ -56,6 +61,6 @@ function main() {
 	console.log(`gen-bookmarklet: wrote ${path.join(publishDir, 'index.html')}`);
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
 	main();
 }

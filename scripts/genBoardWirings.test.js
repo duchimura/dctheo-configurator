@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { extractBoardWiring } from './genBoardWirings.js';
-import { renderTsFile } from './genBoardWirings.js';
+import { extractBoardWiring, renderTsFile } from './genBoardWirings.js';
 
 describe('extractBoardWiring', () => {
   it('extracts all 12 fixed-slot keys from conventional BoardConfig.h macros', () => {

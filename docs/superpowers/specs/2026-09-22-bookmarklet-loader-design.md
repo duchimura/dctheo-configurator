@@ -53,6 +53,16 @@ already open on the controller's own config page (`http://192.168.7.1`).
   pass a CORS preflight. This is why the design avoids `fetch`/`XHR` to load the bundle (which
   would preflight) in favor of `<script src>`/`<link href>` tags (which never preflight,
   regardless of origin).
+  > **Footnote:** the loader bundle itself (`<script type="module" src="...">`, loaded from
+  > GitHub Pages, not the controller) is a separate cross-origin request from the firmware's own
+  > `/api/...` CORS story above, and is worth being precise about: `<script type="module" src>`
+  > is *always* fetched in CORS mode (unlike a classic `<script src>`, which is a "no-CORS"
+  > request the browser doesn't apply the CORS check to at all). Module scripts are not exempt
+  > from CORS — this design works only because (a) it's a simple `GET` with no custom headers, so
+  > no preflight is triggered, and (b) GitHub Pages' response includes
+  > `Access-Control-Allow-Origin: *`, which satisfies the actual CORS check that a module script
+  > does undergo. Swap the host for one that doesn't send a permissive CORS header and the module
+  > script load would fail even though a classic script tag pointed at the same URL would not.
 - **The API is already same-origin-safe for this design**: the bookmarklet never navigates the
   tab away from `http://192.168.7.1`, so once the D_C_Theo UI is loaded, its own calls to
   `/api/...` are same-origin exactly as the stock UI's are — no CORS or preflight involved for

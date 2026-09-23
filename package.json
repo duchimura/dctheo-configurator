@@ -43,6 +43,7 @@
 		"lint:dc": "eslint src/Data/dc src/Hooks/dc src/Components/dc src/Pages/dc src/Store/useConnectionStore.ts src/Store/useDcMode.ts --ext js,jsx,ts,tsx --report-unused-disable-directives --max-warnings 0",
 		"build:loader": "npx vite build --config vite.loader.config.ts",
 		"gen-bookmarklet": "node scripts/genBookmarklet.js",
+		"// publish:loader": "order matters: `vite build` emits its own publish/index.html (the app shell), which gen-bookmarklet then deliberately overwrites with the landing page — reversing these would silently publish the wrong thing",
 		"publish:loader": "npm run build:loader && npm run gen-bookmarklet"
 	},
 	"devDependencies": {

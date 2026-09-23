@@ -27,6 +27,16 @@ describe('buildBookmarkletSource', () => {
 	it("loads the script as a module, matching the bundle's own module output", () => {
 		expect(buildBookmarkletSource(BASE, JS, CSS)).toContain("s.type='module'");
 	});
+
+	it('guards against running on the wrong origin before touching the DOM', () => {
+		const source = buildBookmarkletSource(BASE, JS, CSS);
+		expect(source).toContain('location.hostname');
+		expect(source).toContain('192.168.7.1');
+		// The guard must run before the DOM gets replaced.
+		expect(source.indexOf('location.hostname')).toBeLessThan(
+			source.indexOf('document.documentElement.innerHTML'),
+		);
+	});
 });
 
 describe('buildBookmarkletHref', () => {
@@ -48,10 +58,14 @@ describe('renderLandingPage', () => {
 	const template =
 		'<a href="__BOOKMARKLET_HREF__">go</a><pre>__BOOKMARKLET_CODE__</pre><p>__BASE_URL__</p>';
 
-	it('fills in the href, the escaped source, and the base URL', () => {
+	it('fills in the href, the escaped href (so the code box is pasteable as-is), and the base URL', () => {
 		const html = renderLandingPage(template, BASE, JS, CSS);
-		expect(html).toContain(`href="${buildBookmarkletHref(BASE, JS, CSS)}"`);
-		expect(html).toContain(escapeHtml(buildBookmarkletSource(BASE, JS, CSS)));
+		const href = buildBookmarkletHref(BASE, JS, CSS);
+		expect(html).toContain(`href="${href}"`);
+		expect(html).toContain(escapeHtml(href));
+		// The manual-fallback code box must contain the full javascript: URI, not
+		// just the raw function source, or pasting it into a bookmark won't work.
+		expect(html).toMatch(/<pre>javascript:/);
 		expect(html).toContain(`<p>${BASE}</p>`);
 		expect(html).not.toContain('__BOOKMARKLET_HREF__');
 		expect(html).not.toContain('__BOOKMARKLET_CODE__');

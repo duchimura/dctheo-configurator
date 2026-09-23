@@ -7,7 +7,7 @@ import '../i18n';
 if (typeof window !== 'undefined') {
 	Object.defineProperty(window, 'matchMedia', {
 		writable: true,
-		value: (query) => ({
+		value: (query: string) => ({
 			matches: false,
 			media: query,
 			onchange: null,

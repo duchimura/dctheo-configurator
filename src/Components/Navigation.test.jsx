@@ -48,6 +48,15 @@ describe('Navigation logo', () => {
     // today's firmware-embedded behavior exactly; the loader build
     // (vite.loader.config.ts, Task 2) sets BASE_URL to the published site's URL
     // instead, so this same source resolves correctly in both contexts.
+    //
+    // NOTE: because BASE_URL is '/' here either way, both assertions below
+    // pass identically whether Navigation.jsx uses `import.meta.env.BASE_URL`
+    // or a hardcoded '/images/logo.png' — this test cannot catch that
+    // regression by itself. The real guard for "the loader build actually
+    // uses the configured base URL" lives in
+    // scripts/verifyLoaderBuild.test.js, which inspects the built
+    // publish/dctheo-loader.js bundle (only meaningful after
+    // `npm run build:loader` has run).
     expect(logo).toHaveAttribute('src', `${import.meta.env.BASE_URL}images/logo.png`);
     expect(logo.getAttribute('src')).toBe('/images/logo.png');
   });
