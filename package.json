@@ -40,7 +40,10 @@
 		"test": "vitest run",
 		"test:watch": "vitest",
 		"size-check": "node scripts/check-bundle-size.js",
-		"lint:dc": "eslint src/Data/dc src/Hooks/dc src/Components/dc src/Pages/dc src/Store/useConnectionStore.ts src/Store/useDcMode.ts --ext js,jsx,ts,tsx --report-unused-disable-directives --max-warnings 0"
+		"lint:dc": "eslint src/Data/dc src/Hooks/dc src/Components/dc src/Pages/dc src/Store/useConnectionStore.ts src/Store/useDcMode.ts --ext js,jsx,ts,tsx --report-unused-disable-directives --max-warnings 0",
+		"build:loader": "npx vite build --config vite.loader.config.ts",
+		"gen-bookmarklet": "node scripts/genBookmarklet.js",
+		"publish:loader": "npm run build:loader && npm run gen-bookmarklet"
 	},
 	"devDependencies": {
 		"@testing-library/jest-dom": "^6.9.1",
