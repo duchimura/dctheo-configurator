@@ -1,3 +1,10 @@
+// Polyfill TextEncoder/TextDecoder for jsdom + esbuild compatibility.
+// esbuild checks `new TextEncoder().encode("") instanceof Uint8Array`, and jsdom's
+// TextEncoder returns a different Uint8Array class. This must be done before any
+// vite or esbuild imports so esbuild's invariant check passes.
+import { TextEncoder, TextDecoder } from 'util';
+Object.assign(globalThis, { TextEncoder, TextDecoder });
+
 import { defineConfig } from 'vitest/config';
 import path from 'path';
 
