@@ -20,5 +20,17 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
     css: false,
+    // Vitest's own defaults don't exclude .worktrees/ (only .git/.cache/etc.), so a
+    // git worktree created inside this repo (e.g. for SDD/agent-managed work) gets
+    // walked and its test files collected a second time, silently doubling every
+    // count. Extend the default exclude list rather than replace it.
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/cypress/**',
+      '**/.{idea,git,cache,output,temp}/**',
+      '**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build}.config.*',
+      '**/.worktrees/**',
+    ],
   },
 });
